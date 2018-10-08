@@ -60,7 +60,8 @@ export class SearchTracePageImpl extends Component {
   }
 
   goToTrace = traceID => {
-    this.props.history.push(prefixUrl(`/trace/${traceID}`));
+    const url = this.props.isEmbed ? `/trace/${traceID}?embed` : `/trace/${traceID}`;
+    this.props.history.push(prefixUrl(url));
   };
 
   render() {
@@ -75,6 +76,7 @@ export class SearchTracePageImpl extends Component {
       maxTraceDuration,
       services,
       traceResults,
+      isEmbed,
     } = this.props;
     const hasTraceResults = traceResults && traceResults.length > 0;
     const showErrors = errors && !loadingTraces;
@@ -82,12 +84,14 @@ export class SearchTracePageImpl extends Component {
     return (
       <div>
         <Row>
-          <Col span={6} className="SearchTracePage--column">
-            <div className="SearchTracePage--find">
-              <h2>Find Traces</h2>
-              {!loadingServices && services ? <SearchForm services={services} /> : <LoadingIndicator />}
-            </div>
-          </Col>
+          {!isEmbed && (
+            <Col span={6} className="SearchTracePage--column">
+              <div className="SearchTracePage--find">
+                <h2>Find Traces</h2>
+                {!loadingServices && services ? <SearchForm services={services} /> : <LoadingIndicator />}
+              </div>
+            </Col>
+          )}
           <Col span={18} className="SearchTracePage--column">
             {showErrors && (
               <div className="js-test-error-message">
@@ -105,16 +109,18 @@ export class SearchTracePageImpl extends Component {
                 diffCohort={diffCohort}
                 skipMessage={isHomepage}
                 traces={traceResults}
+                isEmbed={isEmbed}
               />
             )}
-            {showLogo && (
-              <img
-                className="SearchTracePage--logo js-test-logo"
-                alt="presentation"
-                src={JaegerLogo}
-                width="400"
-              />
-            )}
+            {showLogo &&
+              !isEmbed && (
+                <img
+                  className="SearchTracePage--logo js-test-logo"
+                  alt="presentation"
+                  src={JaegerLogo}
+                  width="400"
+                />
+              )}
           </Col>
         </Row>
       </div>
@@ -124,6 +130,7 @@ export class SearchTracePageImpl extends Component {
 
 SearchTracePageImpl.propTypes = {
   isHomepage: PropTypes.bool,
+  isEmbed: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   traceResults: PropTypes.array,
   diffCohort: PropTypes.array,
@@ -196,6 +203,7 @@ const stateServicesXformer = getLastXformCacher(stateServices => {
 // export to test
 export function mapStateToProps(state) {
   const query = queryString.parse(state.router.location.search);
+  const isEmbed = 'embed' in query;
   const isHomepage = !Object.keys(query).length;
   const { traces, maxDuration, traceError, loadingTraces } = stateTraceXformer(state.trace);
   const diffCohort = stateTraceDiffXformer(state.trace, state.traceDiff);
@@ -211,6 +219,7 @@ export function mapStateToProps(state) {
   const traceResults = sortedTracesXformer(traces, sortBy);
   return {
     diffCohort,
+    isEmbed,
     isHomepage,
     loadingServices,
     loadingTraces,

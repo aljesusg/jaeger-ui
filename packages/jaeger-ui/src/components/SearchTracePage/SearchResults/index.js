@@ -37,6 +37,7 @@ type SearchResultsProps = {
   cohortRemoveTrace: string => void,
   diffCohort: FetchedTrace[],
   goToTrace: string => void,
+  isEmbed?: boolean,
   loading: boolean,
   maxTraceDuration: number,
   skipMessage?: boolean,
@@ -107,7 +108,7 @@ export default class SearchResults extends React.PureComponent<SearchResultsProp
         </React.Fragment>
       );
     }
-    const { goToTrace, maxTraceDuration } = this.props;
+    const { goToTrace, isEmbed, maxTraceDuration } = this.props;
     const cohortIds = new Set(diffCohort.map(datum => datum.id));
     return (
       <div>
@@ -143,7 +144,7 @@ export default class SearchResults extends React.PureComponent<SearchResultsProp
                 <ResultItem
                   durationPercent={getPercentageOfDuration(trace.duration, maxTraceDuration)}
                   isInDiffCohort={cohortIds.has(trace.traceID)}
-                  linkTo={prefixUrl(`/trace/${trace.traceID}`)}
+                  linkTo={prefixUrl(isEmbed ? `/trace/${trace.traceID}?embed` : `/trace/${trace.traceID}`)}
                   toggleComparison={this.toggleComparison}
                   trace={trace}
                 />

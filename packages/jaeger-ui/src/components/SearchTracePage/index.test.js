@@ -48,6 +48,7 @@ describe('<SearchTracePage>', () => {
     traceResults = [{ traceID: 'a', spans: [], processes: {} }, { traceID: 'b', spans: [], processes: {} }];
     props = {
       traceResults,
+      isEmbed: false,
       isHomepage: false,
       loadingServices: false,
       loadingTraces: false,
@@ -140,6 +141,7 @@ describe('mapStateToProps()', () => {
     expect(diffCohort[0].data.traceID).toBe(trace.traceID);
 
     expect(rest).toEqual({
+      isEmbed: false,
       isHomepage: true,
       // the redux-form `formValueSelector` mock returns `null` for "sortBy"
       sortTracesBy: null,

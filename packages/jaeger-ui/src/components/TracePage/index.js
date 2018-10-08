@@ -213,7 +213,7 @@ export class TracePageImpl extends React.PureComponent<TracePageProps, TracePage
     }
   };
 
-  filterSpans: (string => ?Set<string>) = (textFilter: string) => {
+  filterSpans: string => ?Set<string> = (textFilter: string) => {
     const spans = this.props.trace && this.props.trace.data && this.props.trace.data.spans;
     if (!spans) return null;
 
