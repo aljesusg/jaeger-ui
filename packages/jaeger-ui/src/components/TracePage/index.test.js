@@ -359,6 +359,9 @@ describe('mapStateToProps()', () => {
           [id]: { data: trace, state: fetchedState.DONE },
         },
       },
+      router: {
+        location: { search: '' },
+      },
       config: {
         archiveEnabled: false,
       },
@@ -373,6 +376,8 @@ describe('mapStateToProps()', () => {
     expect(props).toEqual({
       id,
       archiveEnabled: false,
+      isEmbed: false,
+      mapCollapsed: false,
       archiveTraceState: undefined,
       trace: { data: {}, state: fetchedState.DONE },
     });

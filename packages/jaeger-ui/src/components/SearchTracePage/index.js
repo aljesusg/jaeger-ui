@@ -77,6 +77,8 @@ export class SearchTracePageImpl extends Component {
       services,
       traceResults,
       isEmbed,
+      hideGraph,
+      disableComparision,
     } = this.props;
     const hasTraceResults = traceResults && traceResults.length > 0;
     const showErrors = errors && !loadingTraces;
@@ -110,6 +112,8 @@ export class SearchTracePageImpl extends Component {
                 skipMessage={isHomepage}
                 traces={traceResults}
                 isEmbed={isEmbed}
+                hideGraph={hideGraph}
+                disableComparision={disableComparision}
               />
             )}
             {showLogo &&
@@ -131,6 +135,8 @@ export class SearchTracePageImpl extends Component {
 SearchTracePageImpl.propTypes = {
   isHomepage: PropTypes.bool,
   isEmbed: PropTypes.bool,
+  hideGraph: PropTypes.bool,
+  disableComparision: PropTypes.bool,
   // eslint-disable-next-line react/forbid-prop-types
   traceResults: PropTypes.array,
   diffCohort: PropTypes.array,
@@ -204,6 +210,8 @@ const stateServicesXformer = getLastXformCacher(stateServices => {
 export function mapStateToProps(state) {
   const query = queryString.parse(state.router.location.search);
   const isEmbed = 'embed' in query;
+  const hideGraph = 'hideGraph' in query;
+  const disableComparision = 'disableComparision' in query;
   const isHomepage = !Object.keys(query).length;
   const { traces, maxDuration, traceError, loadingTraces } = stateTraceXformer(state.trace);
   const diffCohort = stateTraceDiffXformer(state.trace, state.traceDiff);
@@ -220,6 +228,8 @@ export function mapStateToProps(state) {
   return {
     diffCohort,
     isEmbed,
+    hideGraph,
+    disableComparision,
     isHomepage,
     loadingServices,
     loadingTraces,

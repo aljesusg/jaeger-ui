@@ -49,6 +49,7 @@ describe('<SearchTracePage>', () => {
     props = {
       traceResults,
       isEmbed: false,
+      disableComparision: false,
       isHomepage: false,
       loadingServices: false,
       loadingTraces: false,
@@ -142,6 +143,8 @@ describe('mapStateToProps()', () => {
 
     expect(rest).toEqual({
       isEmbed: false,
+      hideGraph: false,
+      disableComparision: false,
       isHomepage: true,
       // the redux-form `formValueSelector` mock returns `null` for "sortBy"
       sortTracesBy: null,

@@ -20,9 +20,10 @@ import _mapValues from 'lodash/mapValues';
 import _maxBy from 'lodash/maxBy';
 import _values from 'lodash/values';
 import { connect } from 'react-redux';
+import queryString from 'query-string';
 import type { RouterHistory, Match } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
-import { Input } from 'antd';
+import { Input, Button } from 'antd';
 
 import ArchiveNotifier from './ArchiveNotifier';
 import { actions as archiveActions } from './ArchiveNotifier/duck';
@@ -58,6 +59,8 @@ type TracePageProps = {
   history: RouterHistory,
   id: string,
   trace: ?FetchedTrace,
+  isEmbed?: boolean,
+  mapCollapsed?: boolean,
 };
 
 type TracePageState = {
@@ -156,6 +159,10 @@ export class TracePageImpl extends React.PureComponent<TracePageProps, TracePage
     if (this._scrollManager) {
       const { trace } = nextProps;
       this._scrollManager.setTrace(trace && trace.data);
+    }
+    if (nextProps.mapCollapsed) {
+      // this.toggleSlimView();
+      console.log('Prop');
     }
   }
 
@@ -324,8 +331,12 @@ export class TracePageImpl extends React.PureComponent<TracePageProps, TracePage
     }
   }
 
+  goBackSearch = () => {
+    this.props.history.goBack();
+  };
+
   render() {
-    const { archiveEnabled, archiveTraceState, trace } = this.props;
+    const { archiveEnabled, archiveTraceState, trace, isEmbed } = this.props;
     const { slimView, headerHeight, textFilter, viewRange, findMatchesIDs } = this.state;
     if (!trace || trace.state === fetchedState.LOADING) {
       return <LoadingIndicator className="u-mt-vast" centered />;
@@ -339,6 +350,7 @@ export class TracePageImpl extends React.PureComponent<TracePageProps, TracePage
     const numberOfServices = new Set(_values(processes).map(p => p.serviceName)).size;
     return (
       <div>
+        {isEmbed && <Button onClick={this.goBackSearch}>Go back</Button>}
         {archiveEnabled && (
           <ArchiveNotifier acknowledge={this.acknowledgeArchive} archivedState={archiveTraceState} />
         )}
@@ -395,7 +407,10 @@ export function mapStateToProps(state: ReduxState, ownProps: { match: Match }) {
   const trace = id ? state.trace.traces[id] : null;
   const archiveTraceState = id ? state.archive[id] : null;
   const archiveEnabled = Boolean(state.config.archiveEnabled);
-  return { archiveEnabled, archiveTraceState, id, trace };
+  const query = queryString.parse(state.router.location.search);
+  const isEmbed = 'embed' in query;
+  const mapCollapsed = 'mapCollapsed' in query;
+  return { archiveEnabled, archiveTraceState, id, trace, isEmbed, mapCollapsed };
 }
 
 // export for tests
